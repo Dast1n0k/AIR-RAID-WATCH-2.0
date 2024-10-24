@@ -1,2 +1,0 @@
-
-#define TOKEN "" //YOUR TOKEN

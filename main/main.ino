@@ -8,7 +8,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 bool alert_flag = false; 
 
 void setup() {
-    Serial.begin(921600);
+    Serial.begin(115200);
     WiFiManagerSetup();
     lcd.init();
     lcd.backlight();
