@@ -30,10 +30,10 @@ void checkAirRaidAlert(String region) {
 
         if (alert_status.indexOf('A') != -1) {
             alert_flag = true;
-            scrollText(1, "Air alarm", 700, 16);
+            scrollText(1, "AIR Alarm", 500, 16);
         } else if (alert_status.indexOf('N') != -1) {
             alert_flag = false;
-            scrollText(1, "No Alarm", 700, 16);
+            scrollText(1, "No AIR Alarm", 500, 16);
         }
     }
     http.end();

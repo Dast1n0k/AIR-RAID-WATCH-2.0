@@ -2,9 +2,9 @@
 #define WEBCONTENT_H
 
 const char custom_html[] PROGMEM = R"rawliteral(
-    <label for='location'>Select your region:</label><br>
+    <label for='location'>Оберіть свій регіон:</label><br>
     <select id='region_id' name='region_select' onchange="updateTextBox()">
-        <option value=''>--Оберіть Регіон--</option>
+        <option value='' disabled selected>--Регіон--</option>
         <option value='3'>Хмельницька область</option>
         <option value='4'>Вінницька область</option>
         <option value='5'>Рівненська область</option>
