@@ -1,2 +1,2 @@
 
-#define TOKEN "cf1b215e2fcb297e6144db0ca0341cb72ac02a1dab2203" //YOUR TOKEN
+#define TOKEN "" //YOUR TOKEN FOR ALERT
