@@ -5,6 +5,7 @@
 
 extern LiquidCrystal_I2C lcd;
 extern bool alert_flag;
+TaskHandle_t setupInstructionsTaskHandle = NULL;
 
 void scrollText(int row, String message, int delayTime, int lcdColumns) {
   for (int i = 0; i < lcdColumns; i++) {
@@ -30,5 +31,18 @@ void setup_instructions(void * parameter) {
   
 }
 
+void lcd_print(int col, int row, const char* format, bool clearScreen = false, ...) {
+    if (clearScreen) {
+        lcd.clear();
+    }
+    lcd.setCursor(col, row);
 
+    char buffer[17];  // Максимум 16 символов + \0
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    lcd.print(buffer);
+}
 #endif

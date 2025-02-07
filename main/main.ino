@@ -6,7 +6,7 @@
 String alert_location; 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  
 bool alert_flag = false; 
-TaskHandle_t setupInstructionsTaskHandle = NULL; //ідентифікатор завдання
+extern TaskHandle_t setupInstructionsTaskHandle; //ідентифікатор завдання
 
 void setup() {
   Serial.begin(921600);
