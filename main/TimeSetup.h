@@ -12,11 +12,12 @@ const long gmtOffset_sec = 3600;
 const int daylightOffset_sec = 3600;
 const char *time_zone = "EET-2EEST,M3.5.0/3,M10.5.0/4"; //timezone of KIEV; More info about timezones here: https://github.com/esp8266/Arduino/blob/master/cores/esp8266/TZ.h 
 
+
 void timeSyncNotificationCallback(struct timeval *tv) {
     Serial.println("Time synchronized");
 }
 
-void timeSetup() {
+void TimeSetup() {
     sntp_set_time_sync_notification_cb(timeSyncNotificationCallback);
     configTzTime(time_zone, ntpServer1, ntpServer2);
     esp_sntp_servermode_dhcp(1);

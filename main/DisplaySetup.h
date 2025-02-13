@@ -5,7 +5,6 @@
 
 extern LiquidCrystal_I2C lcd;
 extern bool alert_flag;
-TaskHandle_t setupInstructionsTaskHandle = NULL;
 
 void scrollText(int row, String message, int delayTime, int lcdColumns) {
   for (int i = 0; i < lcdColumns; i++) {
@@ -19,7 +18,7 @@ void scrollText(int row, String message, int delayTime, int lcdColumns) {
   }
 }
 
-void setup_instructions(void * parameter) {
+void setup_instructions() {
   while (true) {
     lcd.setCursor(2, 0);
     lcd.print("INSTRUCTION!");

@@ -2,97 +2,80 @@
 #define WIFIMANAGER_SETUP_H
 
 #include <WiFiManager.h>
+#include <Preferences.h>
 #include "WebContent.h"
 #include "DisplaySetup.h"
+#include "Sound.h"
+#include "Callbacks.h"
 
-extern String alert_location;
+Preferences preferences;
+
+extern String alert_location; 
 extern const char custom_html[];
-TaskHandle_t errorTaskHandle = NULL; 
-extern TaskHandle_t setupInstructionsTaskHandle;
+extern TaskHandle_t errorTaskHandle; 
 
 WiFiManager wfm;
 
-void ErrorTask(void *parameter) {
-  Serial.println("[INFO] ErrorTask started. Waiting 10 sec...");
-  delay(10000);
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[ERROR] Failed to connect. Incorrect password?");
-    lcd_print(0, 0, "Wrong password!");
-    lcd_print(3, 1, "Try Again");
-    delay(5000);
-    lcd.clear();
-  }
-
-  Serial.println("[INFO] ErrorTask finished, deleting...");
-
-  if (setupInstructionsTaskHandle != NULL) {
-    lcd.clear();
-    vTaskDelete(setupInstructionsTaskHandle);
-    setupInstructionsTaskHandle = NULL;
-  }
-
-  xTaskCreate(
-        setup_instructions,       // Функция новой задачи
-        "SetupInstructions",      // Имя задачи
-        2048,                     // Размер стека
-        NULL,                     // Параметры
-        1,                        // Приоритет
-        &setupInstructionsTaskHandle  // Сохраняем идентификатор
-  );
-
-  vTaskDelete(NULL);  
-}
-
-void ErrorCallback() {
-    Serial.println("[INFO] ErrorCallback triggered! Starting parallel task...");
-
-    if (setupInstructionsTaskHandle != NULL) {
-        Serial.println("[INFO] Deleting setupInstructionsTask...");
-        lcd.clear();
-        vTaskDelete(setupInstructionsTaskHandle);
-        setupInstructionsTaskHandle = NULL;
-        lcd_print(2, 0, "Connecting...");
-    }
-    xTaskCreate(
-        ErrorTask,       
-        "ErrorTask",      
-        2048,             
-        NULL,          
-        2,               
-        &errorTaskHandle  
-    );
-}
-
 void WiFiManagerSetup() {
+    preferences.begin("settings", false);
+    alert_location = preferences.getString("region", "");  
+    Serial.println("Loaded saved region: ");
+    Serial.println(alert_location);
+    bool autoconnection;
     std::vector<const char *> customMenu = {"wifi", "exit"};
     wfm.setMenu(customMenu);
     wfm.setTitle("ALERT IN UKRAINE");
-    wfm.resetSettings();
+    wfm.resetSettings(); //func for debuging
     wfm.setDebugOutput(true);
     wfm.setClass("invert");
-    wfm.setConnectTimeout(10);
-    wfm.setSaveParamsCallback(ErrorCallback);
+    wfm.setConnectTimeout(15);
+    wfm.setSaveParamsCallback(ConnectionErrorCallback);
 
     WiFiManagerParameter custom_dropdown_html(custom_html);
     WiFiManagerParameter region_id("alert_location", "REGION ID:", "", 50);
-    
+
     wfm.addParameter(&custom_dropdown_html);
-    wfm.addParameter(&region_id);
-
-
-    if (!wfm.autoConnect("AIR_Alarm Clock", "password")) {
-      Serial.println("[ERROR] Failed to enter portal mode.");
-      //delay(1000);
+    wfm.addParameter(&region_id); 
+    autoconnection = wfm.autoConnect("AIR_Alarm Clock", "password");
+    //Func if success autoconnection 
+    // if (WiFi.status() == WL_CONNECTED) {
+    //   Serial.println("AutoConnection Success");
+    //   Serial.print("Selected region or input: ");
+    //   Serial.println(alert_location); 
+    //   return;
+    // } 
+    if (!autoconnection) {
+      Serial.println("[ERROR] Failed to autoConnect.");
+      delay(1000);
       ESP.restart();
     }
+    else {
+      vTaskDelete(errorTaskHandle);
+      errorTaskHandle = NULL;
+      lcd.clear();
+      Serial.println("WiFi connected");
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
 
-    Serial.println("WiFi connected");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-
-    alert_location = region_id.getValue();
-    Serial.print("Selected region or input: ");
-    Serial.println(alert_location);  
+      alert_location = region_id.getValue();
+      Serial.print("Selected region or input: ");
+      Serial.println(alert_location);  
+      preferences.putString("region", alert_location);
+      Serial.println("Region saved to NVS.");
+        
+      preferences.end();  // Закрываем NVS (необязательно, но хорошая практика)
+    }
 }
+
+// I want to rewrite this fucking shit blyat suka function
+void OpenSettingsPortal() {
+  Serial.println("Reset Settings");
+  wfm.resetSettings();
+  lcd_print(2, 0, "Restarting...", true);
+  delay(3000);
+  ESP.restart();
+}
+
+
 #endif
 
