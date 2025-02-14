@@ -1,6 +1,10 @@
 #ifndef ERRORHANDLING_H
 #define ERRORHANDLING_H
 
+#include "WiFiSetup.h"
+
+extern WiFiManager wfm;
+
 void isLocationConfigured()
 {
   if (alert_location == ""){
@@ -8,6 +12,7 @@ void isLocationConfigured()
       buzzer_sound(buzzer, 500, 700);
       lcd_print(2, 1, "Restarting...");
       delay(5000);
+      wfm.resetSettings();
       ESP.restart();
     }
 }

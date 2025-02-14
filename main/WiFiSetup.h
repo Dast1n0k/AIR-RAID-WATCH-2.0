@@ -25,7 +25,7 @@ void WiFiManagerSetup() {
     std::vector<const char *> customMenu = {"wifi", "exit"};
     wfm.setMenu(customMenu);
     wfm.setTitle("ALERT IN UKRAINE");
-    wfm.resetSettings(); //func for debuging
+    //wfm.resetSettings(); //func for debuging
     wfm.setDebugOutput(true);
     wfm.setClass("invert");
     wfm.setConnectTimeout(15);
@@ -39,9 +39,6 @@ void WiFiManagerSetup() {
     autoconnection = wfm.autoConnect("AIR_Alarm Clock", "password");
     //Func if success autoconnection 
     // if (WiFi.status() == WL_CONNECTED) {
-    //   Serial.println("AutoConnection Success");
-    //   Serial.print("Selected region or input: ");
-    //   Serial.println(alert_location); 
     //   return;
     // } 
     if (!autoconnection) {
@@ -50,19 +47,23 @@ void WiFiManagerSetup() {
       ESP.restart();
     }
     else {
-      vTaskDelete(errorTaskHandle);
-      errorTaskHandle = NULL;
+      if (errorTaskHandle != NULL)
+      {
+        vTaskDelete(errorTaskHandle);
+        errorTaskHandle = NULL;
+        lcd.clear();
+        alert_location = region_id.getValue();
+        Serial.print("Selected region or input: ");
+        Serial.println(alert_location);  
+        preferences.putString("region", alert_location);
+        Serial.println("Region saved to NVS.");
+      }
       lcd.clear();
       Serial.println("WiFi connected");
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
-
-      alert_location = region_id.getValue();
       Serial.print("Selected region or input: ");
       Serial.println(alert_location);  
-      preferences.putString("region", alert_location);
-      Serial.println("Region saved to NVS.");
-        
       preferences.end();  // Закрываем NVS (необязательно, но хорошая практика)
     }
 }
