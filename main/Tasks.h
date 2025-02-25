@@ -3,40 +3,43 @@
 
 #include "TimeSetup.h"
 #include "DisplaySetup.h"
-#include "HttpRequest.h"
 #include "DisplaySetup.h"
+#include "Sound.h"
+#include "RGBLedSetup.h"
+#include "ButtonSetup.h"
 
 TaskHandle_t setupInstructionsTaskHandle = NULL;
 TaskHandle_t timeTaskHandle = NULL;
+TaskHandle_t alertTaskHandle = NULL;
+TaskHandle_t buttonTaskHandle = NULL;
+
+void buttonClickTask(void* parameter) {
+  while (true) {
+    checkButtonClick();  // Отслеживаем нажатие кнопки
+    vTaskDelay(10 / portTICK_PERIOD_MS);  // Небольшая задержка, чтобы снизить нагрузку на процессор
+  }
+}
+
+void alertBlinkTask(void* parameter) {
+    int ledPin = *((int*)parameter);
+
+    for (int i = 0; i < 5; i++) {  
+        digitalWrite(ledPin, HIGH);
+        buzzer_sound(buzzer, 700, 200); 
+        delay(700);
+        digitalWrite(ledPin, LOW);
+        delay(700);
+    }
+
+    alertTaskHandle = NULL;  
+    vTaskDelete(NULL); 
+}
+
 
 void setup_instructions_task(void *parameter)
 {
   setup_instructions();
 }
-
-// void timeTask(void *parameter) {
-//   for (;;) {
-//     // Захват мьютекса для экрана
-//     if (xSemaphoreTake(lcdMutex, portMAX_DELAY) == pdTRUE) {
-      
-//       // Рисуем время на экране
-//       printLocalTime(); // Функция, которая рисует время на экране
-
-//       // Освобождение мьютекса после рисования
-//       xSemaphoreGive(lcdMutex);
-
-//       vTaskDelay(1000 / portTICK_PERIOD_MS);
-//     } 
-//     else 
-//     {
-//       Serial.println("Unlucky to catch Mutex");
-//     }
-
-//     // Задержка перед следующим обновлением
-//     vTaskDelay(5000 / portTICK_PERIOD_MS);
-//   }
-// }
-
 
 void errorTask(void *parameter) {
   Serial.println("[INFO] ErrorTask started. Waiting 10 sec...");
@@ -62,5 +65,7 @@ void errorTask(void *parameter) {
   xTaskCreate(setup_instructions_task, "setup_instructions_task", 2048, NULL, 1, &setupInstructionsTaskHandle);
   vTaskDelete(NULL);  
 }
+
+
 
 #endif

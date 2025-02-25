@@ -16,6 +16,7 @@ extern TaskHandle_t errorTaskHandle;
 
 WiFiManager wfm;
 
+
 void WiFiManagerSetup() {
     preferences.begin("settings", false);
     alert_location = preferences.getString("region", "");  
@@ -67,16 +68,6 @@ void WiFiManagerSetup() {
       preferences.end();  // Закрываем NVS (необязательно, но хорошая практика)
     }
 }
-
-// I want to rewrite this fucking shit blyat suka function
-void OpenSettingsPortal() {
-  Serial.println("Reset Settings");
-  wfm.resetSettings();
-  lcd_print(2, 0, "Restarting...", true);
-  delay(3000);
-  ESP.restart();
-}
-
 
 #endif
 

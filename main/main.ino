@@ -5,6 +5,8 @@
 #include "Sound.h"
 #include "Tasks.h"
 #include "ErrorHandling.h"
+#include "RGBLedSetup.h"
+#include "ButtonSetup.h"
 
 String alert_location; 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  
@@ -12,7 +14,7 @@ bool alert_flag = false;
 
 extern TaskHandle_t setupInstructionsTaskHandle; //ідентифікатор завдання
 extern TaskHandle_t timeTaskHandle;
-
+extern TaskHandle_t buttonTaskHandle;
 void setup() {
   Serial.begin(921600);
   lcd.init();
@@ -26,9 +28,12 @@ void setup() {
     1,                             // Пріоритетність завдань
     &setupInstructionsTaskHandle   // Зберігаємо ідентифікатор завдання
   );
+  ButtonSetup();
+  LedSetup();
   SoundSetup();
   WiFiManagerSetup();
   TimeSetup();
+  xTaskCreate(buttonClickTask, "ButtonClickTask", 2048, NULL, 1, &buttonTaskHandle);
 }
 
 void loop() {
@@ -52,8 +57,9 @@ void loop() {
             OpenSettingsPortal();
         }
     }
+     
   }
-  delay(500);
+  delay(600);
 }
 
 

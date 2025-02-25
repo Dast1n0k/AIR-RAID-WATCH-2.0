@@ -22,7 +22,7 @@ void setup_instructions() {
   while (true) {
     lcd.setCursor(2, 0);
     lcd.print("INSTRUCTION!");
-    scrollText(1, "OPEN WIFI SETTIGNS", 450, 16);
+    scrollText(1, "OPEN WIFI SETTINGS", 450, 16);
     scrollText(1, "CHOOSE WIFI 'AIR_Alarm CLOCK'", 450, 16);
     lcd.clear();
     delay(100);  // Підтримуємо завдання активним, поки його не буде видалено ззовні
