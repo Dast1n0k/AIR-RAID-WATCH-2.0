@@ -43,9 +43,6 @@ void loop() {
     stopSetupInstructions();
     isLocationConfigured();
     printLocalTime();
-    // if (timeTaskHandle == NULL) {
-    //   xTaskCreate(timeTask, "TimeTask", 4096, NULL, 1, &timeTaskHandle);
-    // }
     checkAirRaidAlert(alert_location);
     checkWiFiStatus();
     if (Serial.available()) {

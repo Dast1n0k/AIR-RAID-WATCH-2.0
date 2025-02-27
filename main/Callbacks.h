@@ -25,6 +25,4 @@ void ConnectionErrorCallback() {
         &errorTaskHandle  
     );
 }
-
-
 #endif

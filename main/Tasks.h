@@ -23,7 +23,7 @@ void buttonClickTask(void* parameter) {
 void alertBlinkTask(void* parameter) {
     int ledPin = *((int*)parameter);
 
-    for (int i = 0; i < 5; i++) {  
+    for (int i = 0; i < 3; i++) {  
         digitalWrite(ledPin, HIGH);
         buzzer_sound(buzzer, 700, 200); 
         delay(700);
